@@ -1,0 +1,5 @@
+# Exclude non-web files from App Engine deploys
+logo_v0.1.jpeg:Zone.Identifier
+.git/**
+*.md
+infra/.secrets/

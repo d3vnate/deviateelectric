@@ -1,0 +1,39 @@
+# App Engine (standard) — static site hosting for deviateelectric.com
+runtime: python312
+env: standard
+
+# Secrets live in Secret Manager. Reference them by replacing deviate-electric
+# (create with: gcloud secrets create NAME --data-file=key.txt)
+env_variables:
+  AWS_ACCESS_KEY_ID: projects/deviate-electric/secrets/aws-ses-access-key-id/versions/latest
+  AWS_SECRET_ACCESS_KEY: projects/deviate-electric/secrets/aws-ses-secret-access-key/versions/latest
+  # TEMPORARILY DISABLED until reCAPTCHA keys are provisioned.
+  # Uncomment (and create the secret) to re-enable bot protection:
+  # RECAPTCHA_SECRET_KEY: projects/deviate-electric/secrets/recaptcha-secret-key/versions/latest
+  # Optional overrides:
+  # AWS_SES_REGION: us-east-1
+  # CONTACT_EMAIL: donny@deviateelectric.com
+  # SENDER_ADDRESS: donny@deviateelectric.com
+  # RECAPTCHA_MIN_SCORE: "0.5"
+
+handlers:
+  # Quote form submission -> Python backend (must precede the catch-all)
+  - url: /send-email
+    script: auto
+
+  # Static assets (CSS, JS, images, fonts, etc.)
+  - url: /(.*\.(?:css|js|mjs|map|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|txt|json))
+    static_files: \1
+    upload: (.*)\.(?:css|js|mjs|map|svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|txt|json)
+
+  # Everything else -> index.html
+  - url: /.*
+    static_files: index.html
+    upload: index.html
+
+instance_class: F1
+
+automatic_scaling:
+  min_instances: 0
+  max_instances: 2
+  max_idle_instances: 0

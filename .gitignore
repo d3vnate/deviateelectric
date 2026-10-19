@@ -1,0 +1,6 @@
+# Local generated secrets (never commit)
+infra/.secrets/
+
+# Python bytecode
+__pycache__/
+*.pyc
