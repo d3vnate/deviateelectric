@@ -212,7 +212,7 @@ def _send_via_ses(subject, text):
         with urllib.request.urlopen(req, timeout=15) as resp:
             resp.read()
     except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", "replace")[:500]
+        detail = exc.read().decode("utf-8", "replace")[:2000]
         raise ApiError(f"SES responded with HTTP {exc.code}: {detail}") from exc
     except urllib.error.URLError as exc:
         raise ApiError(str(exc.reason)) from exc
@@ -262,8 +262,8 @@ def _handle_send_email(environ, start_response):
 
     try:
         _send_via_ses(_build_subject(fields["service"], fields["name"]), _build_text(fields))
-    except ApiError as exc:
-        log.exception("Failed to dispatch email")
+    except Exception as exc:  # noqa: BLE001 - report anything that breaks dispatch
+        log.exception("Failed to dispatch email (%s: %s)", type(exc).__name__, exc)
         return _respond(
             start_response,
             502,

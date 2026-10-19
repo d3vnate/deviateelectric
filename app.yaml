@@ -11,7 +11,7 @@ env_variables:
   # Uncomment (and create the secret) to re-enable bot protection:
   # RECAPTCHA_SECRET_KEY: projects/deviate-electric/secrets/recaptcha-secret-key/versions/latest
   # Optional overrides:
-  # AWS_SES_REGION: us-east-1
+  AWS_SES_REGION: us-east-2
   # CONTACT_EMAIL: donny@deviateelectric.com
   # SENDER_ADDRESS: donny@deviateelectric.com
   # RECAPTCHA_MIN_SCORE: "0.5"
