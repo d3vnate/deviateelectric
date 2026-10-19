@@ -80,10 +80,24 @@
       note.textContent = message;
     };
 
+    // Basic client-side validation (backend re-validates independently)
+    const EMAIL_RE = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+    const PHONE_RE = /^[\d\s()+.-]{7,20}$/;
+    const validateFields = () => {
+      const name = form.name.value.trim();
+      const phone = form.phone.value.trim();
+      const email = form.email.value.trim();
+      if (!name || !phone) return "Please provide your name and phone number.";
+      if (!PHONE_RE.test(phone)) return "That phone number looks off — digits, spaces, dashes, parens only.";
+      if (email && !EMAIL_RE.test(email)) return "That email address looks off — please double-check it.";
+      return null;
+    };
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!form.name.value.trim() || !form.phone.value.trim()) {
-        showNote("Please provide your name and phone number.", true);
+      const validationError = validateFields();
+      if (validationError) {
+        showNote(validationError, true);
         return;
       }
 
@@ -119,8 +133,11 @@
         });
         const data = await res.json().catch(() => ({ ok: false }));
         if (res.ok && data.ok) {
+          // Success: collapse the form fields, keep the thank-you note
+          form.querySelectorAll("label, button, input[type=hidden]").forEach((el) => {
+            el.style.display = "none";
+          });
           showNote("Thanks! We\u2019ll reach out within one business day.");
-          form.reset();
         } else {
           showNote(data.error || "Something went wrong sending your request. Please try again.", true);
         }
